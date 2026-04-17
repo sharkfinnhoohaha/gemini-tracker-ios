@@ -12,6 +12,7 @@ public class AuthViewModel: ObservableObject {
     
     public init(authService: GoogleAuthService) {
         self.authService = authService
+        self.isAuthenticated = authService.isAuthenticated
         
         authService.$isAuthenticated
             .receive(on: RunLoop.main)

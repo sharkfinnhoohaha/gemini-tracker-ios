@@ -76,3 +76,10 @@ public struct LoginView: View {
         .background(SystemBackgroundColor.ignoresSafeArea())
     }
 }
+
+#if DEBUG
+#Preview("Login") {
+    LoginView()
+        .environmentObject(PreviewSupport.makeSignedOutAuthViewModel())
+}
+#endif

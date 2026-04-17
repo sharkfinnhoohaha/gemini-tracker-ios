@@ -21,3 +21,19 @@ public struct ContentView: View {
         .animation(.easeInOut(duration: 0.3), value: authViewModel.isAuthenticated)
     }
 }
+
+#if DEBUG
+#Preview("Logged Out") {
+    ContentView(dashboardViewModel: PreviewSupport.makeDashboardViewModel())
+        .environmentObject(PreviewSupport.makeSignedOutAuthViewModel())
+        .environmentObject(PreviewSupport.makeStoreManager())
+        .environmentObject(PreviewSupport.makeNotificationManager())
+}
+
+#Preview("Logged In") {
+    ContentView(dashboardViewModel: PreviewSupport.makeDashboardViewModel())
+        .environmentObject(PreviewSupport.makeAuthenticatedAuthViewModel())
+        .environmentObject(PreviewSupport.makeStoreManager(powerUser: true))
+        .environmentObject(PreviewSupport.makeNotificationManager())
+}
+#endif

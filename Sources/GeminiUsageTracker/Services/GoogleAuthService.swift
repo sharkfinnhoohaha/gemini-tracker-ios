@@ -1,6 +1,10 @@
 import Foundation
 import GoogleSignIn
+#if os(macOS)
+import AppKit
+#else
 import UIKit
+#endif
 
 public class GoogleAuthService: ObservableObject {
     public static let defaultClientID = "1096942919584-r3t36c8ambmif6u8h9f3loumtlm06vjs.apps.googleusercontent.com"
@@ -24,15 +28,24 @@ public class GoogleAuthService: ObservableObject {
         self.clientID = clientID ?? bundleClientID ?? Self.defaultClientID
     }
     
+    @MainActor
     public func signIn() async throws {
         let configuration = GIDConfiguration(clientID: clientID)
         GIDSignIn.sharedInstance.configuration = configuration
 
-        let presentingViewController = try await MainActor.run { () -> UIViewController in
-            guard let root = Self.resolveRootViewController() else {
-                throw UsageProviderError.apiError("Unable to find a presenting view controller for Google Sign-In.")
-            }
-            return root
+        #if os(macOS)
+        guard let presentingWindow = Self.resolvePresentingWindow() else {
+            throw UsageProviderError.apiError("Unable to find a macOS window for Google Sign-In.")
+        }
+
+        let result = try await GIDSignIn.sharedInstance.signIn(
+            withPresenting: presentingWindow,
+            hint: nil,
+            additionalScopes: requiredScopes
+        )
+        #else
+        guard let presentingViewController = Self.resolveRootViewController() else {
+            throw UsageProviderError.apiError("Unable to find a presenting view controller for Google Sign-In.")
         }
 
         let result = try await GIDSignIn.sharedInstance.signIn(
@@ -40,42 +53,50 @@ public class GoogleAuthService: ObservableObject {
             hint: nil,
             additionalScopes: requiredScopes
         )
+        #endif
 
         let user = result.user
         let profile = user.profile
 
-        await MainActor.run {
-            self.isAuthenticated = true
-            self.userName = profile?.name
-            self.userEmail = profile?.email
-            self.accessToken = user.accessToken.tokenString
-        }
+        self.isAuthenticated = true
+        self.userName = profile?.name
+        self.userEmail = profile?.email
+        self.accessToken = user.accessToken.tokenString
     }
     
+    @MainActor
     public func signOut() {
         GIDSignIn.sharedInstance.signOut()
-        DispatchQueue.main.async {
-            self.isAuthenticated = false
-            self.userName = nil
-            self.userEmail = nil
-            self.accessToken = nil
-        }
+        self.isAuthenticated = false
+        self.userName = nil
+        self.userEmail = nil
+        self.accessToken = nil
     }
 
+    @MainActor
     public func getBearerToken() async throws -> String {
-        return try await MainActor.run {
-            guard isAuthenticated, let accessToken else {
-                throw UsageProviderError.unauthorized
-            }
-            return accessToken
+        guard isAuthenticated, let accessToken else {
+            throw UsageProviderError.unauthorized
         }
+        return accessToken
     }
 
+    @MainActor
     @discardableResult
     public func handleOpenURL(_ url: URL) -> Bool {
         GIDSignIn.sharedInstance.handle(url)
     }
 
+    #if os(macOS)
+    @MainActor
+    private static func resolvePresentingWindow() -> NSWindow? {
+        let application = NSApplication.shared
+        return application.keyWindow
+            ?? application.mainWindow
+            ?? application.windows.first(where: { $0.isVisible })
+            ?? application.windows.first
+    }
+    #else
     @MainActor
     private static func resolveRootViewController() -> UIViewController? {
         let activeScenes = UIApplication.shared.connectedScenes
@@ -88,4 +109,5 @@ public class GoogleAuthService: ObservableObject {
 
         return keyWindow?.rootViewController
     }
+    #endif
 }

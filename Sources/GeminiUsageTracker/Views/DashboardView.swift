@@ -151,3 +151,12 @@ public struct DashboardView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview("Dashboard") {
+    DashboardView(viewModel: PreviewSupport.makeDashboardViewModel())
+        .environmentObject(PreviewSupport.makeAuthenticatedAuthViewModel())
+        .environmentObject(PreviewSupport.makeStoreManager(powerUser: true))
+        .environmentObject(PreviewSupport.makeNotificationManager())
+}
+#endif
