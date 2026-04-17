@@ -13,13 +13,14 @@ let package = Package(
             targets: ["GeminiUsageTracker"]),
     ],
     dependencies: [
-        // We simulate GoogleSignIn dependency for compilation
-        // .package(url: "https://github.com/google/GoogleSignIn-iOS", from: "7.0.0")
+        .package(url: "https://github.com/google/GoogleSignIn-iOS", from: "7.0.0")
     ],
     targets: [
         .executableTarget(
             name: "GeminiUsageTracker",
-            dependencies: []
+            dependencies: [
+                .product(name: "GoogleSignIn", package: "GoogleSignIn-iOS")
+            ]
         ),
     ]
 )

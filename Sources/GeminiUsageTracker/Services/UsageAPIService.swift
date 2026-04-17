@@ -3,6 +3,13 @@ import Foundation
 public protocol UsageAPIService {
     func fetchCurrentUsage() async throws -> UsageReport
     func fetchHistoricalUsage(days: Int) async throws -> [HistoricalData]
+    func fetchUsageState() async throws -> UsageState?
+}
+
+public extension UsageAPIService {
+    func fetchUsageState() async throws -> UsageState? {
+        nil
+    }
 }
 
 public class MockUsageProvider: UsageAPIService {

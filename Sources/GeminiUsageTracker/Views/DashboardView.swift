@@ -23,6 +23,10 @@ public struct DashboardView: View {
                             .foregroundColor(.secondary)
                     }
                     Spacer()
+
+                    if let usageState = viewModel.usageState {
+                        ProviderStatusBadge(usageState: usageState)
+                    }
                     
                     Button(action: {
                         authViewModel.signOut()
