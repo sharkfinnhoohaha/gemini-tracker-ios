@@ -126,7 +126,7 @@ public struct DashboardView: View {
                             .padding(.horizontal)
                             
                             // Free tier countdown
-                            Text("Limits reset in 4 hours 12 mins")
+                            QuotaResetCountdown()
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }

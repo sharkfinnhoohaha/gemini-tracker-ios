@@ -27,7 +27,6 @@ struct GeminiTrackerApp: App {
                 .environmentObject(authViewModel)
                 .environmentObject(storeManager)
                 .environmentObject(notificationManager)
-                .preferredColorScheme(.dark) // Force dark mode for premium look
                 .onOpenURL { url in
                     _ = authViewModel.authService.handleOpenURL(url)
                 }
