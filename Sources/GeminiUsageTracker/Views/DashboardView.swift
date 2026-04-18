@@ -23,6 +23,10 @@ public struct DashboardView: View {
                             .foregroundColor(.secondary)
                     }
                     Spacer()
+
+                    if let usageState = viewModel.usageState {
+                        ProviderStatusBadge(usageState: usageState)
+                    }
                     
                     Button(action: {
                         authViewModel.signOut()
@@ -147,3 +151,12 @@ public struct DashboardView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview("Dashboard") {
+    DashboardView(viewModel: PreviewSupport.makeDashboardViewModel())
+        .environmentObject(PreviewSupport.makeAuthenticatedAuthViewModel())
+        .environmentObject(PreviewSupport.makeStoreManager(powerUser: true))
+        .environmentObject(PreviewSupport.makeNotificationManager())
+}
+#endif

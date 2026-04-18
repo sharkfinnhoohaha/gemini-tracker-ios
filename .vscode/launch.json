@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:GeminiUsageTracker}",
+            "name": "Debug GeminiUsageTracker",
+            "target": "GeminiUsageTracker",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug GeminiUsageTracker"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:GeminiUsageTracker}",
+            "name": "Release GeminiUsageTracker",
+            "target": "GeminiUsageTracker",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release GeminiUsageTracker"
+        }
+    ]
+}

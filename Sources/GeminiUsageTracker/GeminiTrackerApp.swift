@@ -10,7 +10,12 @@ struct GeminiTrackerApp: App {
     init() {
         // App Dependency Injection
         let authService = GoogleAuthService()
-        let usageService = MockUsageProvider()
+        let projectId = ProcessInfo.processInfo.environment["GOOGLE_CLOUD_PROJECT_ID"]
+        let usageService = UsageFactory.makeAPIService(
+            authService: authService,
+            projectId: projectId,
+            preferredKind: nil
+        )
         
         _authViewModel = StateObject(wrappedValue: AuthViewModel(authService: authService))
         self.dashboardViewModel = DashboardViewModel(apiService: usageService)
@@ -23,6 +28,9 @@ struct GeminiTrackerApp: App {
                 .environmentObject(storeManager)
                 .environmentObject(notificationManager)
                 .preferredColorScheme(.dark) // Force dark mode for premium look
+                .onOpenURL { url in
+                    _ = authViewModel.authService.handleOpenURL(url)
+                }
         }
     }
 }

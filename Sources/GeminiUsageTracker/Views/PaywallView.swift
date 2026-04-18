@@ -150,3 +150,11 @@ struct ProductRow: View {
         }
     }
 }
+
+#if DEBUG
+#Preview("Paywall") {
+    PaywallView()
+        .environmentObject(PreviewSupport.makeStoreManager())
+        .environmentObject(PreviewSupport.makeNotificationManager())
+}
+#endif

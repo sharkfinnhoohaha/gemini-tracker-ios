@@ -4,6 +4,7 @@ import SwiftUI
 @MainActor
 public class DashboardViewModel: ObservableObject {
     @Published public var currentUsage: UsageReport?
+    @Published public var usageState: UsageState?
     @Published public var historicalData: [HistoricalData] = []
     @Published public var isLoading: Bool = false
     @Published public var errorMessage: String? = nil
@@ -23,11 +24,13 @@ public class DashboardViewModel: ObservableObject {
                 // Fetch concurrently
                 async let usageTask = apiService.fetchCurrentUsage()
                 async let historyTask = apiService.fetchHistoricalUsage(days: 7)
+                async let stateTask = apiService.fetchUsageState()
                 
-                let (usage, history) = try await (usageTask, historyTask)
+                let (usage, history, state) = try await (usageTask, historyTask, stateTask)
                 
                 self.currentUsage = usage
                 self.historicalData = history
+                self.usageState = state
                 self.isLoading = false
             } catch {
                 self.errorMessage = "Failed to load usage data. Please try again."
